@@ -26,28 +26,7 @@ The server will start at: **`http://localhost:3000`**
 
 ---
 
-## 2. Cloud Deployment (GitHub Pages & Render)
-
-### Live Deployment Status:
-- **Frontend Portal (GitHub Pages)**: [https://naren2023.github.io/acxiomCRM/](https://naren2023.github.io/acxiomCRM/) *(Live & Active)*
-- **Backend Service (Render Blueprint)**: [Deploy AcxiomCRM to Render](https://render.com/deploy?repo=https://github.com/naren2023/acxiomCRM)
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/naren2023/acxiomCRM)
-
-### Architecture:
-1. **Frontend Portal (GitHub Pages)**:
-   - Hosted directly from the `/docs` directory on GitHub Pages.
-   - Live URL: **`https://naren2023.github.io/acxiomCRM/`**
-   - Provides a responsive dashboard overview, demo login credentials, API explorer for testing backend endpoints, and direct links to the running CRM.
-2. **Backend Service (Render)**:
-   - Pre-configured using [`render.yaml`](render.yaml) blueprint.
-   - Deploys as a Node.js web service running the Express app and SQLite database.
-   - Click the **Deploy to Render** button above or in the Render Dashboard go to **New > Blueprint** &rarr; select **`naren2023/acxiomCRM`** &rarr; **Apply**.
-   - Once deployed, copy your Render app URL (e.g., `https://acxiomcrm-backend.onrender.com`) and paste it into the backend URL input on the GitHub Pages portal to test live API calls.
-
----
-
-## 3. Directory Structure (Frontend & Backend Separation)
+## 2. Directory Structure (Frontend & Backend Separation)
 
 ```
 acxiomCRM/
@@ -85,19 +64,16 @@ acxiomCRM/
 │       ├── opportunities/         # Opportunity views (list, form, details)
 │       ├── partials/              # Shared partials (header, navbar, footer, alerts)
 │       └── reports/               # Executive pipeline report
-├── docs/                          # GitHub Pages static frontend portal
-│   └── index.html                 # Frontend portal with API explorer and demo info
 ├── package.json                   # Project metadata and dependencies
-├── render.yaml                    # Render blueprint deployment configuration
 ├── server.js                      # Root server launcher
 ├── test_acceptance.js             # Automated 14-step Section 17.19 acceptance test suite
 ├── test_all_features.js           # Extended edge-case test suite
-└── README.md                      # Comprehensive documentation
+└── README.md                      # Documentation
 ```
 
 ---
 
-## 4. Seeded User Credentials
+## 3. Seeded User Credentials
 
 All seeded accounts share the default password **`Test@1234`** (complies with the enterprise password policy):
 
@@ -111,7 +87,7 @@ All seeded accounts share the default password **`Test@1234`** (complies with th
 
 ---
 
-## 5. Architecture & Phase Summary
+## 4. Architecture & Phase Summary
 
 ### Phase 1: Authentication & Security
 - **Session & Password Hashing**: `express-session` with secure cookies + `bcryptjs` salted password hashing.
@@ -163,7 +139,7 @@ All endpoints are authenticated via session, role-scoped, input-validated, and r
 
 ---
 
-## 6. Section 17.19 Acceptance Scenario Walkthrough
+## 5. Section 17.19 Acceptance Scenario Walkthrough
 
 The automated acceptance test suite in `test_acceptance.js` verifies all 14 steps defined in Section 17.19:
 
@@ -189,7 +165,7 @@ node test_acceptance.js
 
 ---
 
-## 7. Security Highlights
+## 6. Security Highlights
 - **Parameterized SQL Only**: All queries use `better-sqlite3` prepared statements with parameter binding to prevent SQL injection.
 - **Passwords Never Logged or Exposed**: Password hashes are excluded from all API responses, views, and audit log entries.
 - **Anti-CSRF Protection**: Tokens enforced on all HTML form state-modifying POST requests.
