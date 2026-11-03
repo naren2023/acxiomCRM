@@ -28,20 +28,22 @@ The server will start at: **`http://localhost:3000`**
 
 ## 2. Cloud Deployment (GitHub Pages & Render)
 
-### Live URLs:
-- **Frontend Portal (GitHub Pages)**: [https://naren2023.github.io/acxiomCRM/](https://naren2023.github.io/acxiomCRM/)
-- **Backend Service (Render)**: [Deploy to Render](https://render.com/deploy?repo=https://github.com/naren2023/acxiomCRM)
+### Live Deployment Status:
+- **Frontend Portal (GitHub Pages)**: [https://naren2023.github.io/acxiomCRM/](https://naren2023.github.io/acxiomCRM/) *(Live & Active)*
+- **Backend Service (Render Blueprint)**: [Deploy AcxiomCRM to Render](https://render.com/deploy?repo=https://github.com/naren2023/acxiomCRM)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/naren2023/acxiomCRM)
 
-### How It Works:
-1. **Frontend on GitHub Pages**:
-   - The `/docs` directory is configured to host the frontend portal directly on GitHub Pages.
-   - To enable: In GitHub repo settings &rarr; **Pages** &rarr; Select Source **Deploy from a branch** &rarr; Branch `main` &rarr; Folder `/docs` &rarr; Click **Save**.
-2. **Backend on Render**:
-   - The repository contains a pre-configured `render.yaml` blueprint.
-   - Click the **Deploy to Render** button above or in Render dashboard: **New > Blueprint** &rarr; Connect `naren2023/acxiomCRM`.
-   - Render automatically runs `npm install` and `npm start`, providing a live public HTTPS URL with the full backend APIs and dynamic SSR views.
+### Architecture:
+1. **Frontend Portal (GitHub Pages)**:
+   - Hosted directly from the `/docs` directory on GitHub Pages.
+   - Live URL: **`https://naren2023.github.io/acxiomCRM/`**
+   - Provides a responsive dashboard overview, demo login credentials, API explorer for testing backend endpoints, and direct links to the running CRM.
+2. **Backend Service (Render)**:
+   - Pre-configured using [`render.yaml`](render.yaml) blueprint.
+   - Deploys as a Node.js web service running the Express app and SQLite database.
+   - Click the **Deploy to Render** button above or in the Render Dashboard go to **New > Blueprint** &rarr; select **`naren2023/acxiomCRM`** &rarr; **Apply**.
+   - Once deployed, copy your Render app URL (e.g., `https://acxiomcrm-backend.onrender.com`) and paste it into the backend URL input on the GitHub Pages portal to test live API calls.
 
 ---
 
@@ -83,11 +85,14 @@ acxiomCRM/
 │       ├── opportunities/         # Opportunity views (list, form, details)
 │       ├── partials/              # Shared partials (header, navbar, footer, alerts)
 │       └── reports/               # Executive pipeline report
+├── docs/                          # GitHub Pages static frontend portal
+│   └── index.html                 # Frontend portal with API explorer and demo info
 ├── package.json                   # Project metadata and dependencies
+├── render.yaml                    # Render blueprint deployment configuration
 ├── server.js                      # Root server launcher
 ├── test_acceptance.js             # Automated 14-step Section 17.19 acceptance test suite
 ├── test_all_features.js           # Extended edge-case test suite
-└── README.md                      # Documentation
+└── README.md                      # Comprehensive documentation
 ```
 
 ---
