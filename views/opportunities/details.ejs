@@ -1,0 +1,104 @@
+<%- include('../partials/header', { title: opp.OpportunityName }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h2 class="fw-bold mb-0"><%= opp.OpportunityName %></h2>
+        <% 
+          let badge = 'bg-secondary';
+          if (opp.Stage === 'Qualification') badge = 'bg-info text-dark';
+          else if (opp.Stage === 'Proposal') badge = 'bg-primary';
+          else if (opp.Stage === 'Negotiation') badge = 'bg-warning text-dark';
+          else if (opp.Stage === 'Won') badge = 'bg-success';
+          else if (opp.Stage === 'Lost') badge = 'bg-danger';
+        %>
+        <span class="badge <%= badge %>"><%= opp.Stage %></span>
+      </div>
+      <p class="text-muted small mb-0">Customer: <a href="/customers/<%= opp.CustomerId %>" class="fw-semibold text-decoration-none"><%= opp.CustomerName %></a> &bull; Close: <%= opp.ExpectedCloseDate %></p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/opportunities/<%= opp.OpportunityId %>/edit" class="btn btn-primary">
+        <i class="bi bi-pencil me-1"></i> Edit Opportunity
+      </a>
+      <a href="/followups/new?customerId=<%= opp.CustomerId %>" class="btn btn-outline-primary">
+        <i class="bi bi-calendar-plus me-1"></i> Schedule Follow-Up
+      </a>
+      <a href="/opportunities" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back
+      </a>
+    </div>
+  </div>
+
+  <%- include('../partials/alerts') %>
+
+  <div class="row g-4">
+    <!-- Opportunity Metrics -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <i class="bi bi-briefcase me-1 text-primary"></i> Commercial Overview
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush small">
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Customer Account:</span>
+              <a href="/customers/<%= opp.CustomerId %>" class="fw-semibold text-decoration-none"><%= opp.CustomerName %></a>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Total Deal Amount:</span>
+              <span class="fw-bold fs-6 text-dark">₹<%= Number(opp.Amount).toLocaleString() %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Win Probability:</span>
+              <span class="fw-semibold"><%= opp.Probability %>%</span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Weighted Pipeline Value (Amount × Prob / 100):</span>
+              <span class="fw-bold text-success fs-6">₹<%= Math.round(weightedValue).toLocaleString() %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Expected Close Date:</span>
+              <code><%= opp.ExpectedCloseDate %></code>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Assigned Deal Owner:</span>
+              <span class="badge bg-light text-dark border"><%= opp.AssignedName || 'Unassigned' %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Created Date:</span>
+              <span><%= new Date(opp.CreatedDate).toLocaleDateString() %></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deal Notes -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <i class="bi bi-journal-text me-1 text-primary"></i> Strategy & Deal Notes
+        </div>
+        <div class="card-body">
+          <div class="p-3 bg-light rounded text-muted small" style="min-height: 140px; white-space: pre-wrap;"><%= opp.Notes || 'No notes entered for this opportunity yet.' %></div>
+          
+          <div class="mt-4 pt-3 border-top">
+            <div class="fw-semibold small mb-2">Deal Action Summary:</div>
+            <div class="d-flex gap-2">
+              <form action="/opportunities/<%= opp.OpportunityId %>/delete" method="POST" onsubmit="return confirm('Delete this opportunity?');">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash me-1"></i> Delete Deal
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

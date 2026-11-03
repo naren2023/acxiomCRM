@@ -1,0 +1,107 @@
+<%- include('../partials/header', { title: title }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container py-4 flex-grow-1">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h2 class="fw-bold mb-1"><%= title %></h2>
+          <p class="text-muted small mb-0">Plan calls, meetings, product demos, or customer task reminders</p>
+        </div>
+        <a href="/followups" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Back to Follow-Ups
+        </a>
+      </div>
+
+      <%- include('../partials/alerts') %>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <form action="<%= isEdit ? '/followups/' + followup.FollowUpId + '/edit' : '/followups' %>" method="POST" data-validate="true" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="FollowUpDate" class="form-label fw-semibold">Scheduled Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="FollowUpDate" name="FollowUpDate" value="<%= followup.FollowUpDate || '' %>" required data-field-name="Follow-up Date">
+                <div class="form-text small">Cannot be earlier than today for new/planned activities</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="FollowUpType" class="form-label fw-semibold">Activity Type <span class="text-danger">*</span></label>
+                <select class="form-select" id="FollowUpType" name="FollowUpType" required>
+                  <% const types = ['Call', 'Meeting', 'Email', 'Task']; %>
+                  <% types.forEach(t => { %>
+                    <option value="<%= t %>" <%= (followup.FollowUpType === t) ? 'selected' : '' %>><%= t %></option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="CustomerId" class="form-label fw-semibold">Link to Customer (Account)</label>
+                <select class="form-select" id="CustomerId" name="CustomerId">
+                  <option value="">-- No Customer Selected --</option>
+                  <% customers.forEach(c => { %>
+                    <option value="<%= c.CustomerId %>" <%= (followup.CustomerId == c.CustomerId) ? 'selected' : '' %>>
+                      <%= c.CustomerName %>
+                    </option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="LeadId" class="form-label fw-semibold">Link to Lead (Prospect)</label>
+                <select class="form-select" id="LeadId" name="LeadId">
+                  <option value="">-- No Lead Selected --</option>
+                  <% leads.forEach(l => { %>
+                    <option value="<%= l.LeadId %>" <%= (followup.LeadId == l.LeadId) ? 'selected' : '' %>>
+                      <%= l.LeadName %>
+                    </option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="Status" class="form-label fw-semibold">Interaction Status <span class="text-danger">*</span></label>
+                <select class="form-select" id="Status" name="Status" required>
+                  <% const statuses = ['Planned', 'Completed', 'Missed', 'Cancelled']; %>
+                  <% statuses.forEach(s => { %>
+                    <option value="<%= s %>" <%= (followup.Status === s) ? 'selected' : '' %>><%= s %></option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <% if (currentUser.Role === 'Admin' || currentUser.Role === 'Manager') { %>
+                <div class="col-md-6">
+                  <label for="AssignedTo" class="form-label fw-semibold">Assigned Team Member</label>
+                  <select class="form-select" id="AssignedTo" name="AssignedTo">
+                    <% salesUsers.forEach(u => { %>
+                      <option value="<%= u.UserId %>" <%= (followup.AssignedTo == u.UserId) ? 'selected' : '' %>>
+                        <%= u.Name %> (<%= u.Role %>)
+                      </option>
+                    <% }); %>
+                  </select>
+                </div>
+              <% } %>
+
+              <div class="col-md-12">
+                <label for="Remarks" class="form-label fw-semibold">Subject / Purpose / Remarks <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="Remarks" name="Remarks" rows="3" required maxlength="255" placeholder="e.g. Discuss revised discount terms with CFO and schedule technical POC" data-field-name="Remarks"><%= followup.Remarks || '' %></textarea>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+              <a href="/followups" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                <i class="bi bi-check2-circle me-1"></i> <%= isEdit ? 'Update Schedule' : 'Schedule Activity' %>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

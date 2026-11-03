@@ -1,0 +1,122 @@
+<%- include('../partials/header', { title: lead.LeadName }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h2 class="fw-bold mb-0"><%= lead.LeadName %></h2>
+        <span class="badge bg-secondary"><%= lead.Status %></span>
+        <code><%= lead.LeadCode %></code>
+      </div>
+      <p class="text-muted small mb-0"><%= lead.CompanyName || 'Direct Inquirer' %> &bull; Source: <%= lead.Source %></p>
+    </div>
+    <div class="d-flex gap-2">
+      <% if (lead.Status !== 'Converted') { %>
+        <form action="/leads/<%= lead.LeadId %>/convert" method="POST" class="d-inline" onsubmit="return confirm('Convert this lead into a Customer and Opportunity?');">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-arrow-repeat me-1"></i> Convert Lead
+          </button>
+        </form>
+        <a href="/leads/<%= lead.LeadId %>/edit" class="btn btn-primary">
+          <i class="bi bi-pencil me-1"></i> Edit Lead
+        </a>
+      <% } %>
+      <a href="/followups/new?leadId=<%= lead.LeadId %>" class="btn btn-outline-primary">
+        <i class="bi bi-calendar-plus me-1"></i> Schedule Follow-Up
+      </a>
+      <a href="/leads" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back
+      </a>
+    </div>
+  </div>
+
+  <%- include('../partials/alerts') %>
+
+  <div class="row g-4">
+    <!-- Lead Details -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <i class="bi bi-funnel me-1 text-primary"></i> Lead Overview
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush small">
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Lead Code:</span>
+              <span class="fw-semibold"><%= lead.LeadCode %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Email:</span>
+              <a href="mailto:<%= lead.Email %>" class="text-decoration-none fw-semibold"><%= lead.Email %></a>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Phone:</span>
+              <a href="tel:<%= lead.Phone %>" class="text-decoration-none fw-semibold"><%= lead.Phone %></a>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Company / Org:</span>
+              <span class="fw-semibold"><%= lead.CompanyName || '-' %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Lead Source:</span>
+              <span class="badge bg-light text-dark border"><%= lead.Source %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Expected Value:</span>
+              <span class="fw-bold text-success">₹<%= Number(lead.ExpectedValue).toLocaleString() %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Assigned Representative:</span>
+              <span class="badge bg-light text-dark border"><%= lead.AssignedName || 'Unassigned' %></span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+              <span class="text-muted">Created Date:</span>
+              <span><%= new Date(lead.CreatedDate).toLocaleDateString() %></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scheduled Follow-ups -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <span class="fw-bold"><i class="bi bi-calendar-check me-1 text-primary"></i> Follow-up Interactions (<%= followups.length %>)</span>
+          <a href="/followups/new?leadId=<%= lead.LeadId %>" class="btn btn-sm btn-outline-primary">+ New</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Remarks</th>
+                <th>Status</th>
+                <th>Assigned Rep</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (followups.length === 0) { %>
+                <tr><td colspan="5" class="text-center py-4 text-muted">No follow-ups recorded yet.</td></tr>
+              <% } %>
+              <% followups.forEach(f => { %>
+                <tr>
+                  <td><code><%= f.FollowUpDate %></code></td>
+                  <td><span class="badge bg-secondary"><%= f.FollowUpType %></span></td>
+                  <td><%= f.Remarks %></td>
+                  <td><span class="badge <%= f.Status === 'Completed' ? 'bg-success' : (f.Status === 'Planned' ? 'bg-warning text-dark' : 'bg-danger') %>"><%= f.Status %></span></td>
+                  <td><%= f.AssignedName || '-' %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

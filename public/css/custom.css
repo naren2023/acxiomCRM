@@ -1,0 +1,80 @@
+:root {
+  --primary-color: #0d6efd;
+  --sidebar-bg: #1e293b;
+  --sidebar-text: #94a3b8;
+  --sidebar-hover: #334155;
+  --sidebar-active: #2563eb;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.card {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+.card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+}
+
+.table th {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-role-Admin {
+  background-color: #dc3545;
+}
+
+.badge-role-Manager {
+  background-color: #0d6efd;
+}
+
+.badge-role-SalesExecutive {
+  background-color: #198754;
+}
+
+.kpi-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.invalid-feedback {
+  display: block;
+  font-size: 0.8125rem;
+}

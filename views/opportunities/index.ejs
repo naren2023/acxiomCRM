@@ -1,0 +1,143 @@
+<%- include('../partials/header', { title: 'Opportunities' }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Sales Opportunities</h2>
+      <p class="text-muted small mb-0">Track commercial deals across qualification, proposal, negotiation, won, and lost stages</p>
+    </div>
+    <div>
+      <a href="/opportunities/new" class="btn btn-primary shadow-sm">
+        <i class="bi bi-briefcase-fill me-1"></i> New Opportunity
+      </a>
+    </div>
+  </div>
+
+  <%- include('../partials/alerts') %>
+
+  <!-- Search & Filter Card -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form action="/opportunities" method="GET" class="row g-3">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" name="search" class="form-control" placeholder="Search by opportunity or customer name..." value="<%= search %>">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select name="stage" class="form-select">
+            <option value="All" <%= stage === 'All' ? 'selected' : '' %>>All Stages</option>
+            <option value="Qualification" <%= stage === 'Qualification' ? 'selected' : '' %>>Qualification</option>
+            <option value="Proposal" <%= stage === 'Proposal' ? 'selected' : '' %>>Proposal</option>
+            <option value="Negotiation" <%= stage === 'Negotiation' ? 'selected' : '' %>>Negotiation</option>
+            <option value="Won" <%= stage === 'Won' ? 'selected' : '' %>>Won</option>
+            <option value="Lost" <%= stage === 'Lost' ? 'selected' : '' %>>Lost</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <select name="status" class="form-select">
+            <option value="All" <%= status === 'All' ? 'selected' : '' %>>All Statuses</option>
+            <option value="Active" <%= status === 'Active' ? 'selected' : '' %>>Active</option>
+            <option value="Won" <%= status === 'Won' ? 'selected' : '' %>>Won</option>
+            <option value="Lost" <%= status === 'Lost' ? 'selected' : '' %>>Lost</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary w-100">Filter</button>
+          <% if (search || stage !== 'All' || status !== 'All') { %>
+            <a href="/opportunities" class="btn btn-outline-secondary">Reset</a>
+          <% } %>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Opportunities Table -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Opportunity Name</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Stage</th>
+            <th>Probability</th>
+            <th>Weighted Value</th>
+            <th>Expected Close</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (opportunities.length === 0) { %>
+            <tr>
+              <td colspan="10" class="text-center py-5 text-muted">
+                <i class="bi bi-briefcase fs-2 d-block mb-2 text-secondary"></i>
+                No opportunities found matching your criteria.
+              </td>
+            </tr>
+          <% } %>
+          <% opportunities.forEach(opp => { %>
+            <% const weighted = (opp.Amount * opp.Probability) / 100; %>
+            <tr>
+              <td class="fw-semibold">
+                <a href="/opportunities/<%= opp.OpportunityId %>" class="text-decoration-none text-dark"><%= opp.OpportunityName %></a>
+              </td>
+              <td><%= opp.CustomerName || 'Unassigned Customer' %></td>
+              <td class="fw-bold text-dark">₹<%= Number(opp.Amount).toLocaleString() %></td>
+              <td>
+                <% 
+                  let badge = 'bg-secondary';
+                  if (opp.Stage === 'Qualification') badge = 'bg-info text-dark';
+                  else if (opp.Stage === 'Proposal') badge = 'bg-primary';
+                  else if (opp.Stage === 'Negotiation') badge = 'bg-warning text-dark';
+                  else if (opp.Stage === 'Won') badge = 'bg-success';
+                  else if (opp.Stage === 'Lost') badge = 'bg-danger';
+                %>
+                <span class="badge <%= badge %>"><%= opp.Stage %></span>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <span><%= opp.Probability %>%</span>
+                  <div class="progress flex-grow-1" style="height: 6px; width: 45px;">
+                    <div class="progress-bar bg-success" style="width: <%= opp.Probability %>%;"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="text-muted">₹<%= Math.round(weighted).toLocaleString() %></td>
+              <td><code><%= opp.ExpectedCloseDate %></code></td>
+              <td>
+                <span class="badge <%= opp.Status === 'Won' ? 'bg-success' : (opp.Status === 'Lost' ? 'bg-danger' : 'bg-primary') %>">
+                  <%= opp.Status %>
+                </span>
+              </td>
+              <td><%= opp.AssignedName || 'Unassigned' %></td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <a href="/opportunities/<%= opp.OpportunityId %>" class="btn btn-outline-secondary" title="View Opportunity">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <a href="/opportunities/<%= opp.OpportunityId %>/edit" class="btn btn-outline-primary" title="Edit Opportunity">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <form action="/opportunities/<%= opp.OpportunityId %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete <%= opp.OpportunityName %>?');">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-outline-danger" title="Delete Opportunity">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

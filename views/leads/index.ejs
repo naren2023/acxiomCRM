@@ -1,0 +1,144 @@
+<%- include('../partials/header', { title: 'Leads' }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Lead Management</h2>
+      <p class="text-muted small mb-0">Capture, qualify, assign, and convert prospective client inquiries</p>
+    </div>
+    <div>
+      <a href="/leads/new" class="btn btn-primary shadow-sm">
+        <i class="bi bi-funnel-fill me-1"></i> New Lead
+      </a>
+    </div>
+  </div>
+
+  <%- include('../partials/alerts') %>
+
+  <!-- Search & Filter Card -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form action="/leads" method="GET" class="row g-3">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" name="search" class="form-control" placeholder="Search by name, company, email, or phone..." value="<%= search %>">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select name="status" class="form-select">
+            <option value="All" <%= status === 'All' ? 'selected' : '' %>>All Statuses</option>
+            <option value="New" <%= status === 'New' ? 'selected' : '' %>>New</option>
+            <option value="Contacted" <%= status === 'Contacted' ? 'selected' : '' %>>Contacted</option>
+            <option value="Qualified" <%= status === 'Qualified' ? 'selected' : '' %>>Qualified</option>
+            <option value="Unqualified" <%= status === 'Unqualified' ? 'selected' : '' %>>Unqualified</option>
+            <option value="Converted" <%= status === 'Converted' ? 'selected' : '' %>>Converted</option>
+            <option value="Lost" <%= status === 'Lost' ? 'selected' : '' %>>Lost</option>
+          </select>
+        </div>
+        <% if (currentUser.Role === 'Admin' || currentUser.Role === 'Manager') { %>
+          <div class="col-md-2">
+            <select name="assignedTo" class="form-select">
+              <option value="All">All Assignees</option>
+              <% salesUsers.forEach(u => { %>
+                <option value="<%= u.UserId %>" <%= assignedTo == u.UserId ? 'selected' : '' %>><%= u.Name %></option>
+              <% }); %>
+            </select>
+          </div>
+        <% } %>
+        <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary w-100">Filter</button>
+          <% if (search || status !== 'All' || assignedTo !== 'All') { %>
+            <a href="/leads" class="btn btn-outline-secondary">Reset</a>
+          <% } %>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Leads Table -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Code</th>
+            <th>Lead Name</th>
+            <th>Company</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Source</th>
+            <th>Expected Value</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (leads.length === 0) { %>
+            <tr>
+              <td colspan="10" class="text-center py-5 text-muted">
+                <i class="bi bi-funnel fs-2 d-block mb-2 text-secondary"></i>
+                No leads found matching the filter criteria.
+              </td>
+            </tr>
+          <% } %>
+          <% leads.forEach(l => { %>
+            <tr>
+              <td><code><%= l.LeadCode %></code></td>
+              <td class="fw-semibold">
+                <a href="/leads/<%= l.LeadId %>" class="text-decoration-none text-dark"><%= l.LeadName %></a>
+              </td>
+              <td><%= l.CompanyName || '-' %></td>
+              <td><%= l.Email %></td>
+              <td><%= l.Phone %></td>
+              <td><span class="badge bg-light text-dark border"><%= l.Source || 'Direct' %></span></td>
+              <td class="fw-semibold">₹<%= Number(l.ExpectedValue).toLocaleString() %></td>
+              <td>
+                <% 
+                  let badgeClass = 'bg-secondary';
+                  if (l.Status === 'New') badgeClass = 'bg-info text-dark';
+                  else if (l.Status === 'Contacted') badgeClass = 'bg-primary';
+                  else if (l.Status === 'Qualified') badgeClass = 'bg-success';
+                  else if (l.Status === 'Converted') badgeClass = 'bg-purple text-white';
+                  else if (l.Status === 'Lost' || l.Status === 'Unqualified') badgeClass = 'bg-danger';
+                %>
+                <span class="badge <%= badgeClass %>" style="<%= l.Status === 'Converted' ? 'background-color: #6f42c1;' : '' %>">
+                  <%= l.Status %>
+                </span>
+              </td>
+              <td><%= l.AssignedName || 'Unassigned' %></td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <a href="/leads/<%= l.LeadId %>" class="btn btn-outline-secondary" title="View Lead">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <% if (l.Status !== 'Converted') { %>
+                    <form action="/leads/<%= l.LeadId %>/convert" method="POST" class="d-inline" onsubmit="return confirm('Convert this lead to a Customer and Opportunity?');">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <button type="submit" class="btn btn-outline-success" title="Convert to Customer & Opportunity">
+                        <i class="bi bi-arrow-repeat"></i>
+                      </button>
+                    </form>
+                    <a href="/leads/<%= l.LeadId %>/edit" class="btn btn-outline-primary" title="Edit Lead">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                  <% } %>
+                  <form action="/leads/<%= l.LeadId %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete <%= l.LeadName %>?');">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-outline-danger" title="Delete Lead">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

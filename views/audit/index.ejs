@@ -1,0 +1,125 @@
+<%- include('../partials/header', { title: 'Audit Logs' }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Security & Business Audit Logs</h2>
+      <p class="text-muted small mb-0">Append-oriented immutable tracking of authentication events, user operations, and data changes</p>
+    </div>
+    <div>
+      <span class="badge bg-danger fs-6 px-3 py-2"><i class="bi bi-shield-lock-fill me-1"></i> Admin Protected</span>
+    </div>
+  </div>
+
+  <%- include('../partials/alerts') %>
+
+  <!-- Audit Filter Form -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form action="/audit" method="GET" class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Filter by Action</label>
+          <select name="action" class="form-select">
+            <option value="All" <%= action === 'All' ? 'selected' : '' %>>All Actions</option>
+            <% distinctActions.forEach(act => { %>
+              <option value="<%= act %>" <%= action === act ? 'selected' : '' %>><%= act %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Filter by Entity / Module</label>
+          <select name="entityName" class="form-select">
+            <option value="All" <%= entityName === 'All' ? 'selected' : '' %>>All Entities</option>
+            <% distinctEntities.forEach(ent => { %>
+              <option value="<%= ent %>" <%= entityName === ent ? 'selected' : '' %>><%= ent %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Filter by User</label>
+          <select name="userId" class="form-select">
+            <option value="All">All Users</option>
+            <% users.forEach(u => { %>
+              <option value="<%= u.UserId %>" <%= userId == u.UserId ? 'selected' : '' %>><%= u.Name %> (<%= u.Role %>)</option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end gap-2">
+          <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+          <% if (action !== 'All' || entityName !== 'All' || userId !== 'All') { %>
+            <a href="/audit" class="btn btn-outline-secondary">Reset</a>
+          <% } %>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Audit Logs Table -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0 small">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Timestamp</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Record ID</th>
+            <th>Change Details / New Value</th>
+            <th>IP Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (auditLogs.length === 0) { %>
+            <tr>
+              <td colspan="8" class="text-center py-5 text-muted">No audit log records match the selected filters.</td>
+            </tr>
+          <% } %>
+          <% auditLogs.forEach(log => { %>
+            <tr>
+              <td><code>#<%= log.AuditLogId %></code></td>
+              <td><%= new Date(log.CreatedDate).toLocaleString() %></td>
+              <td>
+                <% if (log.UserName) { %>
+                  <span class="fw-semibold"><%= log.UserName %></span>
+                <% } else { %>
+                  <span class="text-muted">Anonymous / System</span>
+                <% } %>
+              </td>
+              <td>
+                <% 
+                  let badge = 'bg-secondary';
+                  if (log.Action.includes('SUCCESS')) badge = 'bg-success';
+                  else if (log.Action.includes('FAIL') || log.Action === 'LOCKOUT' || log.Action === 'DELETE') badge = 'bg-danger';
+                  else if (log.Action === 'CREATE' || log.Action === 'LEAD_CONVERTED') badge = 'bg-primary';
+                  else if (log.Action === 'UPDATE') badge = 'bg-warning text-dark';
+                %>
+                <span class="badge <%= badge %>"><%= log.Action %></span>
+              </td>
+              <td><span class="badge bg-light text-dark border"><%= log.EntityName %></span></td>
+              <td><%= log.RecordId || '-' %></td>
+              <td style="max-width: 320px;">
+                <% if (log.OldValue) { %>
+                  <details class="text-muted small">
+                    <summary class="text-dark cursor-pointer">View Old vs New</summary>
+                    <div class="p-1 bg-light border rounded mt-1">
+                      <div class="text-danger">Old: <code><%= log.OldValue %></code></div>
+                      <div class="text-success mt-1">New: <code><%= log.NewValue %></code></div>
+                    </div>
+                  </details>
+                <% } else { %>
+                  <span class="text-break"><%= log.NewValue || '-' %></span>
+                <% } %>
+              </td>
+              <td><code><%= log.IpAddress || '127.0.0.1' %></code></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

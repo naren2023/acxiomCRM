@@ -1,0 +1,103 @@
+<%- include('../partials/header', { title: title }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container py-4 flex-grow-1">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h2 class="fw-bold mb-1"><%= title %></h2>
+          <p class="text-muted small mb-0">Record and track potential business prospect details and sales readiness</p>
+        </div>
+        <a href="/leads" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i> Back to Leads
+        </a>
+      </div>
+
+      <%- include('../partials/alerts') %>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <form action="<%= isEdit ? '/leads/' + lead.LeadId + '/edit' : '/leads' %>" method="POST" data-validate="true" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="LeadCode" class="form-label fw-semibold">Lead Code <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="LeadCode" name="LeadCode" value="<%= lead.LeadCode || '' %>" required maxlength="50" data-field-name="Lead Code">
+              </div>
+
+              <div class="col-md-6">
+                <label for="LeadName" class="form-label fw-semibold">Lead Contact Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="LeadName" name="LeadName" value="<%= lead.LeadName || '' %>" required maxlength="100" data-field-name="Lead Name">
+              </div>
+
+              <div class="col-md-6">
+                <label for="Email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" id="Email" name="Email" value="<%= lead.Email || '' %>" required data-type="email" maxlength="150" data-field-name="Email">
+              </div>
+
+              <div class="col-md-6">
+                <label for="Phone" class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" id="Phone" name="Phone" value="<%= lead.Phone || '' %>" required data-type="phone" maxlength="10" placeholder="10-digit number" data-field-name="Phone">
+              </div>
+
+              <div class="col-md-6">
+                <label for="CompanyName" class="form-label fw-semibold">Organization / Company</label>
+                <input type="text" class="form-control" id="CompanyName" name="CompanyName" value="<%= lead.CompanyName || '' %>" maxlength="150">
+              </div>
+
+              <div class="col-md-6">
+                <label for="Source" class="form-label fw-semibold">Lead Source</label>
+                <select class="form-select" id="Source" name="Source">
+                  <% const sources = ['Website', 'Referral', 'LinkedIn', 'Cold Call', 'Trade Show', 'Email Campaign', 'Other']; %>
+                  <% sources.forEach(s => { %>
+                    <option value="<%= s %>" <%= (lead.Source === s) ? 'selected' : '' %>><%= s %></option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="Status" class="form-label fw-semibold">Lead Status <span class="text-danger">*</span></label>
+                <select class="form-select" id="Status" name="Status" required>
+                  <% const statuses = ['New', 'Contacted', 'Qualified', 'Unqualified', 'Converted', 'Lost']; %>
+                  <% statuses.forEach(st => { %>
+                    <option value="<%= st %>" <%= (lead.Status === st) ? 'selected' : '' %>><%= st %></option>
+                  <% }); %>
+                </select>
+                <div class="form-text small">Transitions must follow CRM lifecycle guidelines</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="ExpectedValue" class="form-label fw-semibold">Expected Deal Value (₹)</label>
+                <input type="number" step="0.01" min="0" class="form-control" id="ExpectedValue" name="ExpectedValue" value="<%= lead.ExpectedValue || 0 %>">
+              </div>
+
+              <% if (currentUser.Role === 'Admin' || currentUser.Role === 'Manager') { %>
+                <div class="col-md-12">
+                  <label for="AssignedTo" class="form-label fw-semibold">Assigned Sales Executive</label>
+                  <select class="form-select" id="AssignedTo" name="AssignedTo">
+                    <% salesUsers.forEach(u => { %>
+                      <option value="<%= u.UserId %>" <%= (lead.AssignedTo == u.UserId) ? 'selected' : '' %>>
+                        <%= u.Name %> (<%= u.Role %>)
+                      </option>
+                    <% }); %>
+                  </select>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+              <a href="/leads" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                <i class="bi bi-check2-circle me-1"></i> <%= isEdit ? 'Update Lead' : 'Save Lead' %>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

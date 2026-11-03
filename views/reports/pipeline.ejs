@@ -1,0 +1,161 @@
+<%- include('../partials/header', { title: 'Pipeline Report' }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Executive Pipeline Report</h2>
+      <p class="text-muted small mb-0">Management visibility into deal stages, forecast revenue, and sales team contributions</p>
+    </div>
+    <div class="d-flex gap-3">
+      <div class="bg-white border p-2 px-3 rounded shadow-sm text-end">
+        <div class="text-muted small">Gross Pipeline Value</div>
+        <div class="fw-bold text-dark fs-5">₹<%= Math.round(totalPipeline).toLocaleString() %></div>
+      </div>
+      <div class="bg-primary text-white p-2 px-3 rounded shadow-sm text-end">
+        <div class="text-white-50 small">Weighted Expected Value</div>
+        <div class="fw-bold text-white fs-5">₹<%= Math.round(totalWeighted).toLocaleString() %></div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/alerts') %>
+
+  <!-- Stage-Wise Breakdown -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white fw-bold">
+          <i class="bi bi-funnel-fill text-primary me-1"></i> Stage-Wise Pipeline Summary
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th>Stage</th>
+                <th class="text-center">Deals</th>
+                <th class="text-end">Total Amount</th>
+                <th class="text-center">Avg Prob</th>
+                <th class="text-end">Weighted Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% stageStats.forEach(st => { %>
+                <tr>
+                  <td class="fw-semibold"><%= st.Stage %></td>
+                  <td class="text-center"><span class="badge bg-light text-dark border"><%= st.oppCount %></span></td>
+                  <td class="text-end fw-semibold">₹<%= Math.round(st.totalAmount).toLocaleString() %></td>
+                  <td class="text-center"><%= Math.round(st.avgProb) %>%</td>
+                  <td class="text-end fw-bold text-success">₹<%= Math.round(st.weightedValue).toLocaleString() %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Owner-Wise Breakdown -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white fw-bold">
+          <i class="bi bi-people-fill text-primary me-1"></i> Sales Representative Contributions
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th>Representative</th>
+                <th class="text-center">Active Deals</th>
+                <th class="text-end">Total Portfolio</th>
+                <th class="text-end">Closed Won</th>
+                <th class="text-end">Weighted Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% ownerStats.forEach(ow => { %>
+                <tr>
+                  <td class="fw-semibold"><%= ow.OwnerName %></td>
+                  <td class="text-center"><span class="badge bg-light text-dark border"><%= ow.oppCount %></span></td>
+                  <td class="text-end">₹<%= Math.round(ow.totalAmount).toLocaleString() %></td>
+                  <td class="text-end text-success fw-semibold">₹<%= Math.round(ow.wonAmount).toLocaleString() %></td>
+                  <td class="text-end fw-bold text-primary">₹<%= Math.round(ow.weightedValue).toLocaleString() %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Opportunity Ledger with Filters -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+      <form action="/reports/pipeline" method="GET" class="row g-2 align-items-center">
+        <div class="col-md-3">
+          <span class="fw-bold"><i class="bi bi-list-check me-1 text-primary"></i> Opportunity Ledger</span>
+        </div>
+        <div class="col-md-3">
+          <select name="stage" class="form-select form-select-sm">
+            <option value="All" <%= stage === 'All' ? 'selected' : '' %>>All Stages</option>
+            <option value="Qualification" <%= stage === 'Qualification' ? 'selected' : '' %>>Qualification</option>
+            <option value="Proposal" <%= stage === 'Proposal' ? 'selected' : '' %>>Proposal</option>
+            <option value="Negotiation" <%= stage === 'Negotiation' ? 'selected' : '' %>>Negotiation</option>
+            <option value="Won" <%= stage === 'Won' ? 'selected' : '' %>>Won</option>
+            <option value="Lost" <%= stage === 'Lost' ? 'selected' : '' %>>Lost</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select name="assignedTo" class="form-select form-select-sm">
+            <option value="All">All Representatives</option>
+            <% salesUsers.forEach(u => { %>
+              <option value="<%= u.UserId %>" <%= assignedTo == u.UserId ? 'selected' : '' %>><%= u.Name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-sm btn-primary w-100">Filter Ledger</button>
+          <% if (stage !== 'All' || assignedTo !== 'All') { %>
+            <a href="/reports/pipeline" class="btn btn-sm btn-outline-secondary">Reset</a>
+          <% } %>
+        </div>
+      </form>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0 small">
+        <thead class="table-light">
+          <tr>
+            <th>Opportunity</th>
+            <th>Customer</th>
+            <th>Stage</th>
+            <th>Amount</th>
+            <th>Probability</th>
+            <th>Weighted Value</th>
+            <th>Target Close</th>
+            <th>Owner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (opportunities.length === 0) { %>
+            <tr><td colspan="8" class="text-center py-4 text-muted">No deals match the selected criteria.</td></tr>
+          <% } %>
+          <% opportunities.forEach(o => { %>
+            <tr>
+              <td class="fw-semibold"><a href="/opportunities/<%= o.OpportunityId %>" class="text-decoration-none"><%= o.OpportunityName %></a></td>
+              <td><%= o.CustomerName %></td>
+              <td><span class="badge bg-light text-dark border"><%= o.Stage %></span></td>
+              <td class="fw-semibold">₹<%= Number(o.Amount).toLocaleString() %></td>
+              <td><%= o.Probability %>%</td>
+              <td class="text-success fw-bold">₹<%= Math.round(o.Amount * o.Probability / 100).toLocaleString() %></td>
+              <td><code><%= o.ExpectedCloseDate %></code></td>
+              <td><%= o.OwnerName %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

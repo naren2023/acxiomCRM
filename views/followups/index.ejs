@@ -1,0 +1,146 @@
+<%- include('../partials/header', { title: 'Follow-Ups' }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Follow-Up & Engagement Schedule</h2>
+      <p class="text-muted small mb-0">Track upcoming calls, meetings, emails, and client tasks</p>
+    </div>
+    <div>
+      <a href="/followups/new" class="btn btn-primary shadow-sm">
+        <i class="bi bi-calendar-plus me-1"></i> Schedule Follow-Up
+      </a>
+    </div>
+  </div>
+
+  <%- include('../partials/alerts') %>
+
+  <!-- Search & Filter Card -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form action="/followups" method="GET" class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Follow-up Date</label>
+          <input type="date" name="date" class="form-control" value="<%= date %>">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Activity Type</label>
+          <select name="type" class="form-select">
+            <option value="All" <%= type === 'All' ? 'selected' : '' %>>All Types</option>
+            <option value="Call" <%= type === 'Call' ? 'selected' : '' %>>Call</option>
+            <option value="Meeting" <%= type === 'Meeting' ? 'selected' : '' %>>Meeting</option>
+            <option value="Email" <%= type === 'Email' ? 'selected' : '' %>>Email</option>
+            <option value="Task" <%= type === 'Task' ? 'selected' : '' %>>Task</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Status</label>
+          <select name="status" class="form-select">
+            <option value="All" <%= status === 'All' ? 'selected' : '' %>>All Statuses</option>
+            <option value="Planned" <%= status === 'Planned' ? 'selected' : '' %>>Planned</option>
+            <option value="Completed" <%= status === 'Completed' ? 'selected' : '' %>>Completed</option>
+            <option value="Missed" <%= status === 'Missed' ? 'selected' : '' %>>Missed</option>
+            <option value="Cancelled" <%= status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+          </select>
+        </div>
+        <% if (currentUser.Role === 'Admin' || currentUser.Role === 'Manager') { %>
+          <div class="col-md-2">
+            <label class="form-label small text-muted">Assignee</label>
+            <select name="assignedTo" class="form-select">
+              <option value="All">All Assignees</option>
+              <% salesUsers.forEach(u => { %>
+                <option value="<%= u.UserId %>" <%= assignedTo == u.UserId ? 'selected' : '' %>><%= u.Name %></option>
+              <% }); %>
+            </select>
+          </div>
+        <% } %>
+        <div class="col-md-1 d-flex align-items-end gap-2">
+          <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Follow-ups Table -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Related Entity</th>
+            <th>Subject / Remarks</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (followups.length === 0) { %>
+            <tr>
+              <td colspan="7" class="text-center py-5 text-muted">
+                <i class="bi bi-calendar-x fs-2 d-block mb-2 text-secondary"></i>
+                No scheduled follow-up activities found.
+              </td>
+            </tr>
+          <% } %>
+          <% followups.forEach(f => { %>
+            <tr>
+              <td><code><%= f.FollowUpDate %></code></td>
+              <td>
+                <% 
+                  let typeIcon = 'bi-telephone-fill text-primary';
+                  if (f.FollowUpType === 'Meeting') typeIcon = 'bi-people-fill text-success';
+                  else if (f.FollowUpType === 'Email') typeIcon = 'bi-envelope-fill text-info';
+                  else if (f.FollowUpType === 'Task') typeIcon = 'bi-check2-square text-warning';
+                %>
+                <span class="d-inline-flex align-items-center gap-1">
+                  <i class="bi <%= typeIcon %>"></i> <%= f.FollowUpType %>
+                </span>
+              </td>
+              <td>
+                <% if (f.CustomerName) { %>
+                  <span class="badge bg-light text-dark border">Customer</span>
+                  <a href="/customers/<%= f.CustomerId %>" class="text-decoration-none fw-semibold ms-1"><%= f.CustomerName %></a>
+                <% } else if (f.LeadName) { %>
+                  <span class="badge bg-light text-dark border">Lead</span>
+                  <a href="/leads/<%= f.LeadId %>" class="text-decoration-none fw-semibold ms-1"><%= f.LeadName %></a>
+                <% } else { %>
+                  <span class="text-muted">-</span>
+                <% } %>
+              </td>
+              <td class="fw-semibold"><%= f.Remarks %></td>
+              <td>
+                <% 
+                  let stBadge = 'bg-secondary';
+                  if (f.Status === 'Completed') stBadge = 'bg-success';
+                  else if (f.Status === 'Planned') stBadge = 'bg-warning text-dark';
+                  else if (f.Status === 'Missed') stBadge = 'bg-danger';
+                %>
+                <span class="badge <%= stBadge %>"><%= f.Status %></span>
+              </td>
+              <td><%= f.AssignedName || 'Unassigned' %></td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <a href="/followups/<%= f.FollowUpId %>/edit" class="btn btn-outline-primary" title="Edit Follow-Up">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <form action="/followups/<%= f.FollowUpId %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this follow-up?');">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-outline-danger" title="Delete Follow-Up">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

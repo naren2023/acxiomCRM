@@ -1,0 +1,24 @@
+<%- include('header', { title: title || 'Error' }) %>
+<%- include('navbar') %>
+
+<main class="container my-5 py-5 flex-grow-1">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="card shadow-sm border-0 text-center p-4 p-md-5">
+        <div class="display-1 fw-bold text-danger mb-2"><%= typeof statusCode !== 'undefined' ? statusCode : 500 %></div>
+        <h3 class="fw-bold mb-3"><%= title || 'An Error Occurred' %></h3>
+        <p class="text-muted mb-4"><%= message || 'The requested action could not be completed.' %></p>
+        <div>
+          <a href="/dashboard" class="btn btn-primary px-4 me-2">
+            <i class="bi bi-house-door me-1"></i> Dashboard
+          </a>
+          <button onclick="history.back()" class="btn btn-outline-secondary px-4">
+            <i class="bi bi-arrow-left me-1"></i> Go Back
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('footer') %>

@@ -1,0 +1,73 @@
+<%- include('../partials/header', { title: 'Login' }) %>
+<%- include('../partials/navbar') %>
+
+<main class="container my-auto py-5 flex-grow-1">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
+              <i class="bi bi-person-fill-lock fs-2"></i>
+            </div>
+            <h3 class="fw-bold mb-1">AcxiomCRM Sign In</h3>
+            <p class="text-muted small">Access your sales pipeline and customer records</p>
+          </div>
+
+          <%- include('../partials/alerts') %>
+
+          <form action="/login" method="POST" data-validate="true" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control" id="email" name="Email" value="<%= typeof oldInput !== 'undefined' && oldInput.Email ? oldInput.Email : '' %>" placeholder="user@acxiom.com" required data-type="email" data-field-name="Email">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between">
+                <label for="password" class="form-label fw-semibold">Password</label>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                <input type="password" class="form-control" id="password" name="Password" placeholder="••••••••" required data-field-name="Password">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+            </button>
+          </form>
+
+          <hr class="my-4">
+
+          <div class="bg-light p-3 rounded small">
+            <div class="fw-bold text-dark mb-1"><i class="bi bi-info-circle me-1"></i> Seeded Demonstration Credentials:</div>
+            <div class="text-muted mb-2">Password for all users: <code class="fw-bold text-primary">Test@1234</code></div>
+            <div class="d-flex flex-wrap gap-1">
+              <button type="button" class="btn btn-xs btn-outline-secondary btn-sm" onclick="fillCreds('admin@acxiom.com', 'Test@1234')">Admin</button>
+              <button type="button" class="btn btn-xs btn-outline-secondary btn-sm" onclick="fillCreds('manager@acxiom.com', 'Test@1234')">Manager</button>
+              <button type="button" class="btn btn-xs btn-outline-secondary btn-sm" onclick="fillCreds('sales@acxiom.com', 'Test@1234')">Sales Exec</button>
+            </div>
+          </div>
+
+          <div class="text-center mt-3 small">
+            Don't have an account? <a href="/register" class="text-decoration-none fw-semibold">Register here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+function fillCreds(email, pass) {
+  document.getElementById('email').value = email;
+  document.getElementById('password').value = pass;
+}
+</script>
+
+<%- include('../partials/footer') %>

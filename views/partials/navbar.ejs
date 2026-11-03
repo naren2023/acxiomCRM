@@ -1,0 +1,84 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/dashboard">
+      <i class="bi bi-diagram-3-fill text-primary"></i>
+      <span>Acxiom<span class="text-primary">CRM</span></span>
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#crmNavbar" aria-controls="crmNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="crmNavbar">
+      <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active fw-bold text-white' : '' %>" href="/dashboard">
+              <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'customers' ? 'active fw-bold text-white' : '' %>" href="/customers">
+              <i class="bi bi-people-fill me-1"></i> Customers
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'leads' ? 'active fw-bold text-white' : '' %>" href="/leads">
+              <i class="bi bi-funnel-fill me-1"></i> Leads
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'opportunities' ? 'active fw-bold text-white' : '' %>" href="/opportunities">
+              <i class="bi bi-briefcase-fill me-1"></i> Opportunities
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'followups' ? 'active fw-bold text-white' : '' %>" href="/followups">
+              <i class="bi bi-calendar-check-fill me-1"></i> Follow-Ups
+            </a>
+          </li>
+          
+          <% if (currentUser.Role === 'Admin' || currentUser.Role === 'Manager') { %>
+            <li class="nav-item">
+              <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'pipeline' ? 'active fw-bold text-white' : '' %>" href="/reports/pipeline">
+                <i class="bi bi-bar-chart-line-fill me-1"></i> Pipeline Report
+              </a>
+            </li>
+          <% } %>
+
+          <% if (currentUser.Role === 'Admin') { %>
+            <li class="nav-item">
+              <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'audit' ? 'active fw-bold text-white' : '' %>" href="/audit">
+                <i class="bi bi-shield-lock-fill me-1"></i> Audit Logs
+              </a>
+            </li>
+          <% } %>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="text-light small text-end d-none d-md-block">
+            <div class="fw-semibold"><%= currentUser.Name %></div>
+            <span class="badge badge-role-<%= currentUser.Role %> text-white"><%= currentUser.Role %></span>
+          </div>
+
+          <form action="/logout" method="POST" class="m-0">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+            <button type="submit" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </button>
+          </form>
+        </div>
+      <% } else { %>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/register"><i class="bi bi-person-plus me-1"></i> Register</a>
+          </li>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</nav>
