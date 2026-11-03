@@ -1,4 +1,7 @@
+
 # AcxiomCRM
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=render)](https://acxiomcrm-by7l.onrender.com/login)
 
 A lightweight, enterprise-grade Role-Based Customer Relationship Management (CRM) application built strictly with **Node.js**, **Express**, **SQLite (`better-sqlite3`)**, **EJS views**, **Bootstrap 5 (CDN)**, and **Chart.js (CDN)**.
 
@@ -6,29 +9,51 @@ Complies with the technical and functional specification in `AcxiomCRM_Complete_
 
 ---
 
-## 1. Quick Setup & Run
+## 1. Live Deployment
+
+🚀 **Live Application:** [AcxiomCRM - Render](https://acxiomcrm-by7l.onrender.com/login)
+
+The application is deployed and accessible online through Render.
+
+| Detail | Information |
+| :--- | :--- |
+| Deployment Platform | Render |
+| Application | AcxiomCRM |
+| Application URL | https://acxiomcrm-by7l.onrender.com/login |
+| Login Page | `/login` |
+| Authentication | Role-Based Access Control (RBAC) |
+
+> **Note:** Render free instances may take a few seconds to wake up after a period of inactivity.
+
+---
+
+## 2. Quick Setup & Run
 
 ### Prerequisites
 - Node.js installed (v18+)
 
 ### Installation
+
 Clone or navigate to the project repository:
+
 ```bash
 cd c:\PROJECTS\acxiomCRM
 npm install
 ```
 
 ### Start the Application
+
 ```bash
 npm start
 ```
+
 The server will start at: **`http://localhost:3000`**
 
 ---
 
-## 2. Directory Structure (Frontend & Backend Separation)
+## 3. Directory Structure (Frontend & Backend Separation)
 
-```
+```text
 acxiomCRM/
 ├── backend/                       # Server-side logic, APIs, and database
 │   ├── middleware/                # Custom auth, role-check, CSRF, and audit middlewares
@@ -37,43 +62,43 @@ acxiomCRM/
 │   │   └── csrf.js
 │   ├── routes/                    # Modular Express route controllers
 │   │   ├── api.js                 # REST API endpoints
-│   │   ├── audit.js               # Admin audit log viewer
-│   │   ├── auth.js                # Login, registration, lockout, logout
-│   │   ├── customers.js           # Customers CRUD
-│   │   ├── dashboard.js           # KPI cards & Chart.js statistics
-│   │   ├── followups.js           # Follow-ups schedule CRUD
-│   │   ├── leads.js               # Leads CRUD & atomic conversion
-│   │   ├── opportunities.js       # Opportunities pipeline CRUD
-│   │   └── reports.js             # Pipeline management report
-│   ├── app.js                     # Express application configuration
-│   ├── db.js                      # SQLite database initialization & seeding
-│   └── server.js                  # Backend HTTP listener
-├── frontend/                      # Presentation layer, UI views, and static assets
-│   ├── public/                    # Client-side static assets
+│   │   ├── audit.js                # Admin audit log viewer
+│   │   ├── auth.js                 # Login, registration, lockout, logout
+│   │   ├── customers.js             # Customers CRUD
+│   │   ├── dashboard.js             # KPI cards & Chart.js statistics
+│   │   ├── followups.js             # Follow-ups schedule CRUD
+│   │   ├── leads.js                 # Leads CRUD & atomic conversion
+│   │   ├── opportunities.js          # Opportunities pipeline CRUD
+│   │   └── reports.js                # Pipeline management report
+│   ├── app.js                       # Express application configuration
+│   ├── db.js                        # SQLite database initialization & seeding
+│   └── server.js                    # Backend HTTP listener
+├── frontend/                         # Presentation layer, UI views, and static assets
+│   ├── public/                      # Client-side static assets
 │   │   ├── css/
-│   │   │   └── custom.css         # Modern CRM theme styling
+│   │   │   └── custom.css            # Modern CRM theme styling
 │   │   └── js/
-│   │       └── validation.js      # Client-side validation & inline error messages
-│   └── views/                     # EJS views and templates
-│       ├── audit/                 # Audit log UI
-│       ├── auth/                  # Login & registration views
-│       ├── customers/             # Customer views (list, form, details)
-│       ├── dashboard/             # Executive dashboard & charts
-│       ├── followups/             # Follow-up schedule views
-│       ├── leads/                 # Lead views (list, form, details)
-│       ├── opportunities/         # Opportunity views (list, form, details)
-│       ├── partials/              # Shared partials (header, navbar, footer, alerts)
-│       └── reports/               # Executive pipeline report
-├── package.json                   # Project metadata and dependencies
-├── server.js                      # Root server launcher
-├── test_acceptance.js             # Automated 14-step Section 17.19 acceptance test suite
-├── test_all_features.js           # Extended edge-case test suite
-└── README.md                      # Documentation
+│   │       └── validation.js         # Client-side validation & inline error messages
+│   └── views/                        # EJS views and templates
+│       ├── audit/                    # Audit log UI
+│       ├── auth/                     # Login & registration views
+│       ├── customers/                # Customer views (list, form, details)
+│       ├── dashboard/                # Executive dashboard & charts
+│       ├── followups/                # Follow-up schedule views
+│       ├── leads/                    # Lead views (list, form, details)
+│       ├── opportunities/             # Opportunity views (list, form, details)
+│       ├── partials/                 # Shared partials (header, navbar, footer, alerts)
+│       └── reports/                  # Executive pipeline report
+├── package.json                       # Project metadata and dependencies
+├── server.js                          # Root server launcher
+├── test_acceptance.js                 # Automated 14-step Section 17.19 acceptance test suite
+├── test_all_features.js               # Extended edge-case test suite
+└── README.md                           # Documentation
 ```
 
 ---
 
-## 3. Seeded User Credentials
+## 4. Seeded User Credentials
 
 All seeded accounts share the default password **`Test@1234`** (complies with the enterprise password policy):
 
@@ -87,9 +112,10 @@ All seeded accounts share the default password **`Test@1234`** (complies with th
 
 ---
 
-## 4. Architecture & Phase Summary
+## 5. Architecture & Phase Summary
 
 ### Phase 1: Authentication & Security
+
 - **Session & Password Hashing**: `express-session` with secure cookies + `bcryptjs` salted password hashing.
 - **Password Policy**: Enforced on server and client (minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 digit).
 - **Account Lockout**: Automatically locks an account for **15 minutes** after **5 consecutive failed login attempts**.
@@ -98,6 +124,7 @@ All seeded accounts share the default password **`Test@1234`** (complies with th
 - **Shared Layout**: Responsive Bootstrap 5 navbar dynamically rendering menu items based on the authenticated user's role.
 
 ### Phase 2: Core CRM Modules (CRUD)
+
 - **Customers**: List, search by (name, email, phone, company), filter by status, create, view, edit, delete. Enforces unique email, unique 10-digit phone, and required fields.
 - **Leads**: Full lifecycle tracking (`New`, `Contacted`, `Qualified`, `Unqualified`, `Converted`, `Lost`). Invalid transitions are rejected at the server level. Includes an atomic **Convert** workflow that generates a Customer and an Opportunity in a single transaction.
 - **Opportunities**: Tracks commercial pipeline (`Qualification`, `Proposal`, `Negotiation`, `Won`, `Lost`). Validates `Amount > 0`, `Probability 0-100`, and rejects `ExpectedCloseDate` in the past for active deals. Computes weighted pipeline values.
@@ -105,6 +132,7 @@ All seeded accounts share the default password **`Test@1234`** (complies with th
 - **Data Scoping**: Sales executives only see records assigned to them or created by them.
 
 ### Phase 3: Audit Logging & Dashboard Analytics
+
 - **AuditLog Table**: Records `UserId`, `Action`, `EntityName`, `RecordId`, `OldValue`, `NewValue`, `CreatedDate`, `IpAddress` on:
   - Login success and failed attempts / account lockouts
   - Create, Update, and Delete on all CRM entities
@@ -126,7 +154,9 @@ All seeded accounts share the default password **`Test@1234`** (complies with th
 - **Pipeline Report (`/reports/pipeline`)**: Stage-wise and sales rep-wise weighted revenue forecasts for Admin and Manager.
 
 ### Phase 4: REST API
+
 All endpoints are authenticated via session, role-scoped, input-validated, and return clean JSON with proper HTTP status codes:
+
 - `GET /api/customers` (200 OK)
 - `POST /api/customers` (201 Created / 400 Bad Request)
 - `GET /api/customers/:id` (200 OK / 403 Forbidden / 404 Not Found)
@@ -139,7 +169,7 @@ All endpoints are authenticated via session, role-scoped, input-validated, and r
 
 ---
 
-## 5. Section 17.19 Acceptance Scenario Walkthrough
+## 6. Section 17.19 Acceptance Scenario Walkthrough
 
 The automated acceptance test suite in `test_acceptance.js` verifies all 14 steps defined in Section 17.19:
 
@@ -147,7 +177,8 @@ The automated acceptance test suite in `test_acceptance.js` verifies all 14 step
 node test_acceptance.js
 ```
 
-### Results Summary:
+### Results Summary
+
 1. **Unauthenticated access to protected pages**: Attempting to load `/dashboard` or `/customers` redirects to `/login` (HTTP 302). Anonymous `/api/customers` returns `HTTP 401 Unauthorized`. `[PASS]`
 2. **Register/Login valid user**: Authenticating as `admin@acxiom.com` succeeds, sets session, and redirects to Dashboard. `[PASS]`
 3. **Client-side validation on invalid Customer inputs**: HTML5 + JS (`validation.js`) catches empty names, invalid email syntax, and non-10-digit phone numbers with inline feedback. `[PASS]`
@@ -165,7 +196,46 @@ node test_acceptance.js
 
 ---
 
-## 6. Security Highlights
+## 7. Security Highlights
+
 - **Parameterized SQL Only**: All queries use `better-sqlite3` prepared statements with parameter binding to prevent SQL injection.
 - **Passwords Never Logged or Exposed**: Password hashes are excluded from all API responses, views, and audit log entries.
 - **Anti-CSRF Protection**: Tokens enforced on all HTML form state-modifying POST requests.
+
+---
+
+## 8. Technologies Used
+
+| Technology | Purpose |
+| :--- | :--- |
+| Node.js | JavaScript runtime |
+| Express.js | Backend web framework |
+| SQLite | Database |
+| better-sqlite3 | SQLite database driver |
+| EJS | Server-side templating |
+| Bootstrap 5 | Responsive UI |
+| Chart.js | Dashboard visualizations |
+| bcryptjs | Password hashing |
+| express-session | Session management |
+| express-validator | Server-side validation |
+
+---
+
+## 9. Project Highlights
+
+- Enterprise-style role-based CRM.
+- Secure authentication and authorization.
+- Customer, lead, opportunity, and follow-up management.
+- Dashboard analytics and visualizations.
+- Audit logging and reporting.
+- REST API integration.
+- Responsive user interface.
+- Live deployment on Render.
+
+---
+
+## 10. Author
+
+Developed as a CRM application project using Node.js, Express, SQLite, and EJS.
+
+**Live Demo:** [https://acxiomcrm-by7l.onrender.com/login](https://acxiomcrm-by7l.onrender.com/login)
