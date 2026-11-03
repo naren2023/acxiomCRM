@@ -9,10 +9,10 @@ const app = express();
 
 // View engine setup
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../frontend/views'));
 
 // Static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 // Body parsing
 app.use(express.urlencoded({ extended: true }));

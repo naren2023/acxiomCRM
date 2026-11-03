@@ -26,7 +26,54 @@ The server will start at: **`http://localhost:3000`**
 
 ---
 
-## 2. Seeded User Credentials
+## 2. Directory Structure (Frontend & Backend Separation)
+
+```
+acxiomCRM/
+├── backend/                       # Server-side logic, APIs, and database
+│   ├── middleware/                # Custom auth, role-check, CSRF, and audit middlewares
+│   │   ├── audit.js
+│   │   ├── auth.js
+│   │   └── csrf.js
+│   ├── routes/                    # Modular Express route controllers
+│   │   ├── api.js                 # REST API endpoints
+│   │   ├── audit.js               # Admin audit log viewer
+│   │   ├── auth.js                # Login, registration, lockout, logout
+│   │   ├── customers.js           # Customers CRUD
+│   │   ├── dashboard.js           # KPI cards & Chart.js statistics
+│   │   ├── followups.js           # Follow-ups schedule CRUD
+│   │   ├── leads.js               # Leads CRUD & atomic conversion
+│   │   ├── opportunities.js       # Opportunities pipeline CRUD
+│   │   └── reports.js             # Pipeline management report
+│   ├── app.js                     # Express application configuration
+│   ├── db.js                      # SQLite database initialization & seeding
+│   └── server.js                  # Backend HTTP listener
+├── frontend/                      # Presentation layer, UI views, and static assets
+│   ├── public/                    # Client-side static assets
+│   │   ├── css/
+│   │   │   └── custom.css         # Modern CRM theme styling
+│   │   └── js/
+│   │       └── validation.js      # Client-side validation & inline error messages
+│   └── views/                     # EJS views and templates
+│       ├── audit/                 # Audit log UI
+│       ├── auth/                  # Login & registration views
+│       ├── customers/             # Customer views (list, form, details)
+│       ├── dashboard/             # Executive dashboard & charts
+│       ├── followups/             # Follow-up schedule views
+│       ├── leads/                 # Lead views (list, form, details)
+│       ├── opportunities/         # Opportunity views (list, form, details)
+│       ├── partials/              # Shared partials (header, navbar, footer, alerts)
+│       └── reports/               # Executive pipeline report
+├── package.json                   # Project metadata and dependencies
+├── server.js                      # Root server launcher
+├── test_acceptance.js             # Automated 14-step Section 17.19 acceptance test suite
+├── test_all_features.js           # Extended edge-case test suite
+└── README.md                      # Documentation
+```
+
+---
+
+## 3. Seeded User Credentials
 
 All seeded accounts share the default password **`Test@1234`** (complies with the enterprise password policy):
 
@@ -40,7 +87,7 @@ All seeded accounts share the default password **`Test@1234`** (complies with th
 
 ---
 
-## 3. Architecture & Phase Summary
+## 4. Architecture & Phase Summary
 
 ### Phase 1: Authentication & Security
 - **Session & Password Hashing**: `express-session` with secure cookies + `bcryptjs` salted password hashing.
@@ -92,7 +139,7 @@ All endpoints are authenticated via session, role-scoped, input-validated, and r
 
 ---
 
-## 4. Section 17.19 Acceptance Scenario Walkthrough
+## 5. Section 17.19 Acceptance Scenario Walkthrough
 
 The automated acceptance test suite in `test_acceptance.js` verifies all 14 steps defined in Section 17.19:
 
@@ -118,7 +165,7 @@ node test_acceptance.js
 
 ---
 
-## 5. Security Highlights
+## 6. Security Highlights
 - **Parameterized SQL Only**: All queries use `better-sqlite3` prepared statements with parameter binding to prevent SQL injection.
 - **Passwords Never Logged or Exposed**: Password hashes are excluded from all API responses, views, and audit log entries.
 - **Anti-CSRF Protection**: Tokens enforced on all HTML form state-modifying POST requests.

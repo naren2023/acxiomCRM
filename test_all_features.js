@@ -94,7 +94,7 @@ async function verifyFeatures() {
   }
 
   // Reset lockout in DB for sales@acxiom.com so further tests can use it
-  const db = require('./db');
+  const db = require('./backend/db');
   db.prepare('UPDATE Users SET FailedLoginCount = 0, LockoutEnd = NULL WHERE Email = ?').run(lockUser);
   console.log('Reset lockout for testing continuation.');
 
