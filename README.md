@@ -26,7 +26,26 @@ The server will start at: **`http://localhost:3000`**
 
 ---
 
-## 2. Directory Structure (Frontend & Backend Separation)
+## 2. Cloud Deployment (GitHub Pages & Render)
+
+### Live URLs:
+- **Frontend Portal (GitHub Pages)**: [https://naren2023.github.io/acxiomCRM/](https://naren2023.github.io/acxiomCRM/)
+- **Backend Service (Render)**: [Deploy to Render](https://render.com/deploy?repo=https://github.com/naren2023/acxiomCRM)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/naren2023/acxiomCRM)
+
+### How It Works:
+1. **Frontend on GitHub Pages**:
+   - The `/docs` directory is configured to host the frontend portal directly on GitHub Pages.
+   - To enable: In GitHub repo settings &rarr; **Pages** &rarr; Select Source **Deploy from a branch** &rarr; Branch `main` &rarr; Folder `/docs` &rarr; Click **Save**.
+2. **Backend on Render**:
+   - The repository contains a pre-configured `render.yaml` blueprint.
+   - Click the **Deploy to Render** button above or in Render dashboard: **New > Blueprint** &rarr; Connect `naren2023/acxiomCRM`.
+   - Render automatically runs `npm install` and `npm start`, providing a live public HTTPS URL with the full backend APIs and dynamic SSR views.
+
+---
+
+## 3. Directory Structure (Frontend & Backend Separation)
 
 ```
 acxiomCRM/
@@ -73,7 +92,7 @@ acxiomCRM/
 
 ---
 
-## 3. Seeded User Credentials
+## 4. Seeded User Credentials
 
 All seeded accounts share the default password **`Test@1234`** (complies with the enterprise password policy):
 
@@ -87,7 +106,7 @@ All seeded accounts share the default password **`Test@1234`** (complies with th
 
 ---
 
-## 4. Architecture & Phase Summary
+## 5. Architecture & Phase Summary
 
 ### Phase 1: Authentication & Security
 - **Session & Password Hashing**: `express-session` with secure cookies + `bcryptjs` salted password hashing.
@@ -139,7 +158,7 @@ All endpoints are authenticated via session, role-scoped, input-validated, and r
 
 ---
 
-## 5. Section 17.19 Acceptance Scenario Walkthrough
+## 6. Section 17.19 Acceptance Scenario Walkthrough
 
 The automated acceptance test suite in `test_acceptance.js` verifies all 14 steps defined in Section 17.19:
 
@@ -165,7 +184,7 @@ node test_acceptance.js
 
 ---
 
-## 6. Security Highlights
+## 7. Security Highlights
 - **Parameterized SQL Only**: All queries use `better-sqlite3` prepared statements with parameter binding to prevent SQL injection.
 - **Passwords Never Logged or Exposed**: Password hashes are excluded from all API responses, views, and audit log entries.
 - **Anti-CSRF Protection**: Tokens enforced on all HTML form state-modifying POST requests.
